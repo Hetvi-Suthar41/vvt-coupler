@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #fff7f0; /* light orange background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.login-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 40px 30px;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: 0 6px 15px rgba(255,165,0,0.2); /* soft orange shadow */
+    box-sizing: border-box;
+    border-top: 6px solid #ff6600; /* orange accent top border */
+}
+
+.login-heading {
+    text-align: center;
+    font-size: 26px;
+    margin-bottom: 30px;
+    color: #ff6600; /* orange heading */
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: #555;
+    font-weight: 500;
+}
+
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus {
+    border-color: #ff6600;
+    box-shadow: 0 0 8px rgba(255,102,0,0.3);
+    outline: none;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(90deg, #ff6600 0%, #ff9900 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(255,165,0,0.3);
+}
+
+.forgot-password {
+    display: block;
+    text-align: right;
+    margin: 8px 0 10px 0;
+    font-size: 13px;
+    color: #ff6600;
+    text-decoration: none;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+/* Sign up link */
+.signup-link {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+    color: #ff6600;
+    text-decoration: none;
+}
+
+.signup-link:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 400px) {
+    .login-card {
+        padding: 30px 20px;
+    }
+    .login-heading {
+        font-size: 24px;
+        margin-bottom: 25px;
+    }
+}
+</style>
+</head>
+
+<body>
+<div class="login-card">
+    <h4 class="login-heading">Login</h4>
+
+    <form method="post" action="/user_login">
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        </div>
+
+        <button type="submit">Login</button>
+    </form>
+
+    <!-- Sign up link -->
+    <a href="{{url_for('user_register')}}" class="signup-link">Don't have an account? Sign Up</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,64 @@
+{% extends 'admin/adminlayout.html' %}
+{% block content %}
+
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="page-header">
+      <h3 class="page-title">Edit Variant</h3>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Forms</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Edit Variant</li>
+        </ol>
+      </nav>
+    </div>
+
+    <div class="row">
+      <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <form action="{{ url_for('edit_variant', id=variant['id']) }}" method="POST" class="forms-sample">
+              
+              <!-- Product Dropdown -->
+              <div class="form-group">
+                <label for="product_id">Select Product</label>
+                <select name="product_id" id="product_id" class="form-control" required>
+                  <option value="">Select Product</option>
+                  {% for p in products %}
+                    <option value="{{ p['id'] }}" {% if p['id'] == variant['product_id'] %}selected{% endif %}>
+                      {{ p['name'] }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <!-- Type -->
+              <div class="form-group">
+                <label for="type">Type</label>
+                <input type="text" name="type" id="type" class="form-control" value="{{ variant['type'] or '' }}">
+              </div>
+
+              <!-- Size -->
+              <div class="form-group">
+                <label for="size">Size</label>
+                <input type="text" name="size" id="size" class="form-control" value="{{ variant['size'] }}" required>
+              </div>
+
+              <!-- Material -->
+              <div class="form-group">
+                <label for="material">Material</label>
+                <input type="text" name="material" id="material" class="form-control" value="{{ variant['material'] }}">
+              </div>
+
+              <!-- Submit & Cancel -->
+              <button type="submit" class="btn btn-primary mr-2">Update Variant</button>
+              <a href="{{ url_for('admin_variantlist') }}" class="btn btn-light">Cancel</a>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

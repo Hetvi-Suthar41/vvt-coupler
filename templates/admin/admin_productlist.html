@@ -1,0 +1,97 @@
+{% extends 'admin/adminlayout.html' %}
+{% block content %}
+
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="page-header">
+      <h3 class="page-title">Product List</h3>
+    </div>
+
+    <div class="row">
+      <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+
+            <table class="table table-bordered table-striped">
+              <thead class="thead-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>Has Type</th>
+                  <th>Image 1</th>
+                  <th>Image 2</th>
+                  <th>Image 3</th>
+                  <th>New Product</th>
+                  <th>Featured Product</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for p in products %}
+                <tr>
+                  <td>{{ p['id'] }}</td>
+                  <td>{{ p['name'] }}</td>
+                  <td>{{ p['description'] }}</td>
+                  <td>{{ 'Yes' if p['has_type'] else 'No' }}</td>
+
+                  <td>
+                    {% if p['image1'] %}
+                    <img src="{{ url_for('static', filename='uploads/product/' ~ p['image1']) }}" 
+                         class="img-fluid rounded" 
+                         style="width:100px; height:100px; object-fit:cover;">
+                    {% endif %}
+                  </td>
+
+                  <td>
+                    {% if p['image2'] %}
+                    <img src="{{ url_for('static', filename='uploads/product/' ~ p['image2']) }}" 
+                         class="img-fluid rounded" 
+                         style="width:100px; height:100px; object-fit:cover;">
+                    {% endif %}
+                  </td>
+
+                  <td>
+                    {% if p['image3'] %}
+                    <img src="{{ url_for('static', filename='uploads/product/' ~ p['image3']) }}" 
+                         class="img-fluid rounded" 
+                         style="width:100px; height:100px; object-fit:cover;">
+                    {% endif %}
+                  </td>
+
+                  <td>
+                    {% if p['is_new'] %}
+                      <span class="badge bg-success">Yes</span>
+                    {% else %}
+                      <span class="badge bg-secondary">No</span>
+                    {% endif %}
+                  </td>
+
+                  <td>
+                    {% if p['is_featured'] %}
+                      <span class="badge bg-warning text-dark">Yes</span>
+                    {% else %}
+                      <span class="badge bg-secondary">No</span>
+                    {% endif %}
+                  </td>
+
+                  <td>
+                    <a href="{{ url_for('edit_product', id=p['id']) }}" class="btn btn-sm btn-primary">Edit</a>
+
+                    <form action="{{ url_for('delete_product', id=p['id']) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure you want to delete this product?');">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

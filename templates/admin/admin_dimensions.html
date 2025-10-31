@@ -1,0 +1,65 @@
+{% extends 'admin/adminlayout.html' %}
+{% block content %}
+
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="page-header">
+      <h3 class="page-title">Add Variant Dimension</h3>
+    </div>
+
+    <div class="row">
+      <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <form class="forms-sample" method="post">
+
+              <!-- Select Variant -->
+              <div class="form-group">
+                <label>Select Variant</label>
+                <select name="variant_id" class="form-control" required>
+                  <option value="">-- Select Variant --</option>
+                  {% for v in variants %}
+                  <option value="{{ v['id'] }}">
+                    {{ v['name'] }}{% if v['type'] %} - {{ v['type'] }}{% endif %} - {{ v['size'] }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <!-- Dimension -->
+              <div class="form-group">
+                <label>Dimension</label>
+                <input type="text" name="dimension" class="form-control" placeholder="Enter dimension">
+              </div>
+
+              <!-- Material -->
+<div class="form-group">
+  <label>Material</label>
+  <input type="text" name="material" class="form-control" placeholder="Enter material (e.g., Steel, Iron)">
+</div>
+
+
+              <!-- Price -->
+              <div class="form-group">
+                <label>Price</label>
+                <input type="number" name="price" class="form-control" placeholder="Enter price" step="0.01">
+              </div>
+
+              <!-- Weight -->
+              <div class="form-group">
+                <label>Weight</label>
+                <input type="text" name="weight" class="form-control" placeholder="Enter weight">
+              </div>
+
+              <!-- Submit -->
+              <button type="submit" class="btn btn-primary mr-2">Add Dimension</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

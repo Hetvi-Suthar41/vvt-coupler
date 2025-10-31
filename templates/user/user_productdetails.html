@@ -1,0 +1,422 @@
+{% extends 'user/userlayout.html' %}
+{% block content %}
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@400;600&display=swap');
+
+body { background: #f0f2f5; font-family: 'Poppins', sans-serif; }
+
+/* ===== LEFT SIDE IMAGE ===== */
+.image-box {
+  width: 100%;
+  max-width: 700px;
+  margin: 30px auto;
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  background: #fff;
+  padding-bottom: 100%;
+}
+
+.product-main-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+  border-radius: 16px;
+}
+
+.product-main-img:hover { transform: scale(1.05); }
+
+.thumbnail-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 15px 0 30px 0;
+  flex-wrap: wrap;
+}
+
+.thumbnail-img {
+  width: 70px;
+  height: 70px;
+  border-radius: 10px;
+  object-fit: cover;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: 0.3s;
+}
+
+.thumbnail-img:hover,
+.thumbnail-img.active {
+  border-color: #ff6600;
+  transform: scale(1.05);
+}
+
+/* ===== RIGHT SIDE DETAILS ===== */
+.product-details-right {
+  padding: 30px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 4px 25px rgba(0,0,0,0.08);
+}
+
+.product-name {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 15px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+@media (min-width: 768px) {
+  .product-details-right {
+    margin-top: 50px;
+  }
+}
+
+.product-desc {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.price-box {
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+}
+
+.price-box strong { color: #e63946; }
+
+.variant-section h5 {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.btn-custom {
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 10px 20px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-custom:hover { transform: scale(1.05); }
+
+.size-btn, .type-btn, .mat-btn, .dim-btn {
+  margin: 5px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+.size-btn:hover, .type-btn:hover, .mat-btn:hover, .dim-btn:hover { opacity: 0.85; }
+
+.selected-btn { background-color: #ff9800 !important; color: #fff !important; border-color: #ff9800 !important; }
+
+#price, #weight { font-weight: 700; color: #ff6600; }
+
+.product-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 25px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 15px 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.btn-warning { background-color:orange; color: white; border: none; }
+
+
+@media (max-width: 992px) {
+  .thumbnail-img { width: 60px; height: 60px; }
+  .action-btn { font-size: 1.1rem; padding: 12px 0; }
+}
+
+@media (max-width: 768px) {
+  .row.g-5 { flex-direction: column-reverse; }
+  .col-lg-6 { margin-top: 20px !important; }
+  .product-actions { flex-direction: column; }
+}
+
+/* ===== VARIANT & ACTION BUTTONS ===== */
+.size-btn, .type-btn, .mat-btn, .dim-btn {
+  font-size: 1.25rem;
+  padding: 14px 28px;
+}
+
+.action-btn {
+  font-size: 1.8rem;
+  padding: 20px 0;
+}
+
+.btn-custom { font-weight: 700; }
+
+@media (max-width: 768px) {
+  .size-btn, .type-btn, .mat-btn, .dim-btn {
+    font-size: 1.1rem;
+    padding: 12px 20px;
+  }
+  .action-btn {
+    font-size: 1.5rem;
+    padding: 16px 0;
+  }
+}
+
+#priceWeightBox p {
+  font-size: 16px;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 10px;
+}
+
+#priceWeightBox p strong {
+  color: #000;
+  font-weight: 700;
+}
+
+#priceWeightBox #price,
+#priceWeightBox #weight {
+  font-weight: 700;
+  color: #000;
+}
+</style>
+
+<div class="container my-5">
+  <div class="row g-5 align-items-start">
+
+    <!-- LEFT: IMAGES -->
+    <div class="col-lg-6 col-md-12 text-center">
+      <div class="image-box">
+        <img id="mainImage" src="{{ url_for('static', filename='uploads/product/' ~ product['image1']) }}" class="product-main-img" alt="{{ product['name'] }}">
+      </div>
+      <div class="thumbnail-row">
+        {% for img in [product['image1'], product['image2'], product['image3']] %}
+          {% if img %}
+            <img src="{{ url_for('static', filename='uploads/product/' ~ img) }}" class="thumbnail-img {% if loop.index == 1 %}active{% endif %}" onclick="changeImage(this)">
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- RIGHT: DETAILS -->
+    <div class="col-lg-6 col-md-12">
+      <div class="product-details-right">
+
+        <h2 class="product-name">{{ product['name'] }}</h2>
+        <p class="product-desc">{{ product['description'] }}</p>
+
+        {% if has_type %}
+        <div id="typeSection" class="variant-section">
+          <h5>Select Type:</h5>
+          {% for v in variants|groupby('type') %}
+            {% if v.grouper %}
+              <button class="btn btn-outline-primary m-1 btn-custom type-btn" data-type="{{ v.grouper }}">{{ v.grouper }}</button>
+            {% endif %}
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <div id="sizeSection" class="variant-section" style="display:none;">
+          <h5>Select Size:</h5>
+          <div id="sizeButtons" class="d-flex flex-wrap gap-2"></div>
+        </div>
+
+        <div id="materialSection" class="variant-section" style="display:none;">
+          <h5>Select Material:</h5>
+          <div id="materialButtons" class="d-flex flex-wrap gap-2"></div>
+        </div>
+
+        <div id="dimensionSection" class="variant-section" style="display:none;">
+          <h5>Select Dimension:</h5>
+          <div id="dimensionButtons" class="d-flex flex-wrap gap-2"></div>
+        </div>
+
+        <div id="priceWeightBox"  style="display:none; margin-top: 5px;">
+          <p><strong>Price:</strong> ₹<span id="price"></span></p>
+          <p><strong>Weight:</strong> <span id="weight"></span></p>
+        </div>
+
+        <div class="product-actions">
+          <button id="addToCartBtn" class="btn btn-warning action-btn" style="display:none;">🛒 Add to Cart</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function changeImage(element){
+  document.getElementById("mainImage").src = element.src;
+  document.querySelectorAll(".thumbnail-img").forEach(img => img.classList.remove("active"));
+  element.classList.add("active");
+}
+
+const productId = "{{ product['id'] }}";
+let selectedType="", selectedVariantId="", selectedMaterial="", selectedDimensionId="", selectedPrice="", selectedWeight="";
+
+// TYPE SELECTION
+const typeSection = document.getElementById("typeSection");
+if(typeSection){
+  document.querySelectorAll(".type-btn").forEach(btn=>{
+    btn.addEventListener("click", function(){
+      selectedType=this.dataset.type;
+      document.getElementById("sizeSection").style.display="block";
+      document.getElementById("materialSection").style.display="none";
+      document.getElementById("dimensionSection").style.display="none";
+      document.getElementById("priceWeightBox").style.display="none";
+      document.getElementById("addToCartBtn").style.display="none";
+      document.querySelectorAll(".type-btn").forEach(b=>b.classList.remove("selected-btn"));
+      this.classList.add("selected-btn");
+
+      fetch(`/get_sizes/${productId}/${selectedType}`)
+      .then(res=>res.json())
+      .then(data=>{
+        const sizeDiv=document.getElementById("sizeButtons");
+        sizeDiv.innerHTML="";
+        data.forEach(size=>{
+          sizeDiv.innerHTML+=`<button class='btn btn-outline-success m-1 btn-custom size-btn' data-id='${size.id}'>${size.size}</button>`;
+        });
+        addSizeListeners();
+      });
+    });
+  });
+}else{
+  document.getElementById("sizeSection").style.display="block";
+  const sizeDiv=document.getElementById("sizeButtons");
+  const variants={{ variants|tojson }};
+  sizeDiv.innerHTML="";
+  variants.forEach(v=>{
+    sizeDiv.innerHTML+=`<button class='btn btn-outline-success m-1 btn-custom size-btn' data-id='${v.id}'>${v.size}</button>`;
+  });
+  addSizeListeners();
+}
+
+function addSizeListeners(){
+  document.querySelectorAll(".size-btn").forEach(btn=>{
+    btn.addEventListener("click", function(){
+      selectedVariantId=this.dataset.id;
+      document.getElementById("materialSection").style.display="block";
+      document.getElementById("dimensionSection").style.display="none";
+      document.getElementById("priceWeightBox").style.display="none";
+      document.getElementById("addToCartBtn").style.display="none";
+      document.querySelectorAll(".size-btn").forEach(b=>b.classList.remove("selected-btn"));
+      this.classList.add("selected-btn");
+
+      fetch(`/get_materials/${selectedVariantId}`)
+      .then(res=>res.json())
+      .then(data=>{
+        const matDiv=document.getElementById("materialButtons");
+        matDiv.innerHTML="";
+        data.forEach(m=>{
+          matDiv.innerHTML+=`<button class='btn btn-outline-info m-1 btn-custom mat-btn' data-material='${m.material}'>${m.material}</button>`;
+        });
+        addMaterialListeners();
+      });
+    });
+  });
+}
+
+function addMaterialListeners(){
+  document.querySelectorAll(".mat-btn").forEach(btn=>{
+    btn.addEventListener("click", function(){
+      selectedMaterial=this.dataset.material;
+      document.getElementById("dimensionSection").style.display="block";
+      document.getElementById("priceWeightBox").style.display="none";
+      document.getElementById("addToCartBtn").style.display="none";
+      document.querySelectorAll(".mat-btn").forEach(b=>b.classList.remove("selected-btn"));
+      this.classList.add("selected-btn");
+
+      fetch(`/get_dimensions/${selectedVariantId}?material=${selectedMaterial}`)
+      .then(res=>res.json())
+      .then(data=>{
+        const dimDiv=document.getElementById("dimensionButtons");
+        dimDiv.innerHTML="";
+        data.forEach(d=>{
+          dimDiv.innerHTML+=`<button class='btn btn-outline-warning m-1 btn-custom dim-btn' data-id='${d.id}' data-price='${d.price}' data-weight='${d.weight}'>${d.dimension}</button>`;
+        });
+        addDimensionListeners();
+      });
+    });
+  });
+}
+
+function addDimensionListeners(){
+  document.querySelectorAll(".dim-btn").forEach(btn=>{
+    btn.addEventListener("click", function(){
+      selectedDimensionId=this.dataset.id;
+      selectedPrice=this.dataset.price;
+      selectedWeight=this.dataset.weight;
+
+      document.querySelectorAll(".dim-btn").forEach(b=>b.classList.remove("selected-btn"));
+      this.classList.add("selected-btn");
+
+      document.getElementById("price").textContent=selectedPrice;
+      document.getElementById("weight").textContent=selectedWeight;
+      document.getElementById("priceWeightBox").style.display="block";
+      document.getElementById("addToCartBtn").style.display="block";
+    });
+  });
+}
+
+// ADD TO CART
+document.getElementById("addToCartBtn").addEventListener("click", function(){
+  if(!selectedDimensionId){ 
+    alert("Please select all options!"); 
+    return; 
+  }
+
+  fetch("/add_to_cart", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      product_id: productId,
+      variant_id: selectedVariantId,
+      material: selectedMaterial,
+      dimension_id: selectedDimensionId,
+      price: selectedPrice,
+      weight: selectedWeight
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === "not_logged_in") {
+      alert("⚠️ Please login to continue!");
+      window.location.href = "/user_login"; // Redirect to login page
+    } 
+    else if (data.status === "success") {
+      alert("🛒 Added to cart successfully!");
+    } 
+    else {
+      alert("Something went wrong!");
+    }
+  })
+  .catch(() => alert("Server error! Please try again later."));
+});
+
+</script>
+
+{% endblock %}

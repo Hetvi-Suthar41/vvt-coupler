@@ -1,0 +1,168 @@
+{% extends 'user/userlayout.html' %}
+{% block content %}
+
+<style>
+/* ===== CART STYLING ===== */
+body { 
+    background: #fff8f0;  /* light cream background */
+    font-family: 'Poppins', sans-serif; 
+}
+
+.cart-container {
+    background: #ffffff; /* white card background */
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    margin-top: 30px;
+}
+
+.cart-container h2 {
+    font-weight: 700;
+    color: #ff6600;  /* orange heading */
+    margin-bottom: 25px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.table th, .table td {
+    vertical-align: middle;
+    text-align: center;
+    font-size: 16px;
+}
+
+.table th {
+    background-color: #fff3e6; /* light orange header */
+    font-weight: 600;
+    color: #ff6600;
+    font-size: 16px;
+}
+
+.table td img {
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid #ffd9b3;
+}
+
+.btn-update {
+    background-color: #ff6600; /* orange button */
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-update:hover { background-color: #e65c00; }
+
+.btn-remove {
+    background-color: #ff3b30; /* red accent */
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-remove:hover { background-color: #cc3226; }
+
+.total-section {
+    margin-top: 20px;
+    text-align: right;
+    background: #fff3e6; /* light orange background */
+    padding: 15px 20px;
+    border-radius: 12px;
+}
+
+.total-section h5 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ff6600;
+}
+
+.btn-checkout {
+    background-color: #ff6600;
+    color: #fff;
+    font-weight: 700;
+    border-radius: 10px;
+    padding: 10px 25px;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn-checkout:hover { background-color: #e65c00; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 992px) {
+    .table-responsive { overflow-x: auto; }
+    .btn-update, .btn-remove, .btn-checkout { padding: 8px 15px; font-size: 0.9rem; }
+    .table th, .table td { font-size: 0.9rem; padding: 10px 8px; }
+}
+
+@media (max-width: 576px) {
+    .cart-container { padding: 20px; }
+    .table th, .table td { font-size: 0.85rem; padding: 8px 5px; }
+    .btn-update, .btn-remove, .btn-checkout { font-size: 0.85rem; padding: 6px 12px; }
+}
+</style>
+
+<div class="container cart-container">
+    <h2>Your Cart</h2>
+    {% if cart_items %}
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Product</th>
+                    <th>Type</th>
+                    <th>Size</th>
+                    <th>Material</th>
+                    <th>Dimension</th>
+                    <th>Price</th>
+                    <th>Weight</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td class="d-flex align-items-center gap-2">
+                        <img src="{{ url_for('static', filename='uploads/product/' ~ item.product_image) }}" width="50" height="50">
+                        {{ item.product_name }}
+                    </td>
+                    <td>{{ item.variant_type or '-' }}</td>
+                    <td>{{ item.variant_size or '-' }}</td>
+                    <td>{{ item.material or '-' }}</td>
+                    <td>{{ item.dimension_name or '-' }}</td>
+                    <td>₹{{ item.price }}</td>
+                    <td>{{ item.weight or '-' }}</td>
+                    <td>
+                        <form action="{{ url_for('update_cart') }}" method="POST" class="d-flex justify-content-center">
+                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="form-control form-control-sm me-2" style="width:70px;">
+                            <button type="submit" class="btn btn-update btn-sm">Update</button>
+                        </form>
+                    </td>
+                    <td>₹{{ item.price * item.quantity }}</td>
+                    <td>
+                        <form action="{{ url_for('remove_from_cart', item_id=item.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to remove this item?');">
+                            <button type="submit" class="btn btn-remove btn-sm">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="total-section">
+        <h5>Total Amount: ₹{{ total }}</h5>
+        <a href="{{ url_for('checkout') }}" class="btn btn-checkout">Proceed to Checkout</a>
+    </div>
+
+    {% else %}
+        <p class="text-center mt-4">Your cart is empty!</p>
+    {% endif %}
+</div>
+
+{% endblock %}

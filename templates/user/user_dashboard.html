@@ -1,0 +1,605 @@
+{% extends 'user/userlayout.html'%}
+{% block content %}
+
+{% if popup %}
+<div id="popupModal" style="position:fixed; top:0; left:0; width:100%; height:100%; 
+                            background:rgba(0,0,0,0.7); display:flex; justify-content:center; 
+                            align-items:center; z-index:999;">
+  <div style="position:relative; max-width:600px; width:90%; background:#fff; 
+              border-radius:12px; overflow:hidden;">
+    <span id="popupClose" style="position:absolute; top:10px; right:15px; 
+          font-size:25px; cursor:pointer; font-weight:bold;">&times;</span>
+    <img src="{{ url_for('static', filename='uploads/popup/' ~ popup.image) }}" 
+         alt="Popup" style="width:100%; display:block;">
+  </div>
+</div>
+{% endif %}
+
+<script>
+  // ===== Popup =====
+const popupModal = document.getElementById('popupModal');
+const popupClose = document.getElementById('popupClose');
+
+if (popupModal) {
+  popupClose.addEventListener('click', function() {
+    popupModal.style.display = 'none';
+    const banner = document.querySelector('.banner-slider');
+    if (banner) banner.style.display = 'block'; // show banner after closing popup
+  });
+}
+
+</script>
+
+<!-- ===== Full Width Banner with Dots ===== -->
+<section class="banner-slider" style="position: relative; width:100%; height:700px; overflow:hidden;">
+
+  <!-- Slides -->
+  <div class="slides">
+    <div class="slide active" style="background-image: url('/static/user/asset/images/sliders/banner1.jpg');"></div>
+    <div class="slide" style="background-image: url('/static/user/asset/images/sliders/banner2.jpg');"></div>
+    <div class="slide" style="background-image: url('/static/user/asset/images/sliders/banner3.jpg');"></div>
+  </div>
+
+  <!-- Overlay -->
+  <div style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(26, 26, 26, 0.5); z-index:1;"></div>
+
+  <!-- Content aligned top-left -->
+  <div class="content" style="position:absolute; top:200px; left:50px; width:auto; height:auto; z-index:2; display:flex; flex-direction:column; justify-content:flex-start; text-align:left; color:#fff;">
+    <h1 style="font-size:70px; margin:0;">Welcome to Our Store</h1>
+    <p style="font-size:30px; margin-top:10px;">Shop the best products at amazing prices</p>
+  </div>
+
+  <!-- Dots Navigation -->
+  <div class="dots-container">
+    <span class="dot active" data-index="0"></span>
+    <span class="dot" data-index="1"></span>
+    <span class="dot" data-index="2"></span>
+  </div>
+
+</section>
+
+<style>
+.banner-slider .slide {
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:700px;
+  background-size: cover;
+  background-position: center;
+  opacity:0;
+  transition: opacity 0.5s ease-in-out;
+}
+.banner-slider .slide.active {
+  opacity:1;
+}
+
+/* Dots Styling */
+.dots-container {
+  position:absolute;
+  bottom:25px;
+  width:100%;
+  text-align:center;
+  z-index:10;
+}
+.dots-container .dot {
+  display:inline-block;
+  width:15px;
+  height:15px;
+  margin:0 8px;
+  background: rgba(255,255,255,0.5);
+  border-radius:50%;
+  cursor:pointer;
+  transition: background 0.3s;
+}
+.dots-container .dot.active {
+  background:#fff;
+}
+</style>
+
+<script>
+let slides = document.querySelectorAll(".banner-slider .slide");
+let dots = document.querySelectorAll(".banner-slider .dot");
+let current = 0;
+
+function showSlide(index){
+  slides.forEach((slide, i) => slide.classList.remove("active"));
+  dots.forEach(dot => dot.classList.remove("active"));
+  
+  slides[index].classList.add("active");
+  dots[index].classList.add("active");
+  current = index;
+}
+
+// Dot click event
+dots.forEach(dot => {
+  dot.addEventListener("click", function(){
+    let index = parseInt(this.getAttribute("data-index"));
+    showSlide(index);
+  });
+});
+
+// Optional: Auto slide
+setInterval(function(){
+  current = (current + 1) % slides.length;
+  showSlide(current);
+}, 2000);
+</script>
+
+<!-- ===== New Products Section ===== -->
+<section class="new-products-section outer-top-vs">
+  <div class="container">
+    <h3 class="section-title">New Products</h3>
+    <div class="product-slider">
+      <div class="owl-carousel home-owl-carousel custom-carousel owl-theme">
+        {% for product in new_products %}
+        <div class="item item-carousel">
+          <div class="product-card">
+            <div class="product-image">
+              <a href="{{url_for('product_detail',product_id=product['id'])}}">
+                {% if product.image1 %}
+                <img src="{{ url_for('static', filename='uploads/product/' ~ product.image1) }}" alt="{{ product.name }}">
+                {% endif %}
+                {% if product.image2 %}
+                <img src="{{ url_for('static', filename='uploads/product/' ~ product.image2) }}" alt="{{ product.name }}" class="hover-image">
+                {% endif %}
+              </a>
+              {% if product.is_new %}
+              <span class="badge-new">New</span>
+              {% endif %}
+            </div>
+            <div class="product-info">
+              <h4 class="product-name"><a href="{{url_for('product_detail',product_id=product['id'])}}">{{ product.name }}</a></h4>
+              {% if product.description %}
+              <p class="product-desc">{{ product.description[:60] }}{% if product.description|length > 60 %}...{% endif %}</p>
+              {% endif %}
+              
+             <div class="product-actions">
+  <a href="{{url_for('product_detail',product_id=product['id'])}}" 
+   class="btn btn-outline btn-sm">
+   View Details
+</a>
+
+</div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+/* ===== Section Title Styling ===== */
+.new-products-section .section-title {
+  font-size: 32px;        /* bigger title */
+  font-weight: 700;       /* bold */
+  color: #ff9800;         /* accent color */
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 25px;
+  border-bottom: 2px solid #ff9800;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+/* ===== Product Card Style ===== */
+.product-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+.product-image {
+  position: relative;
+  overflow: hidden;
+}
+.product-image img {
+  width: 100%;
+  height: 250px;  /* card size remains same */
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+.product-image .hover-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+}
+.product-card:hover .hover-image {
+  opacity: 1;
+}
+.product-card:hover .product-image img:first-child {
+  opacity: 0;
+}
+
+/* Space between carousel items */
+.home-owl-carousel .item {
+  margin-right: 15px;
+}
+
+.badge-new {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #ff9800;
+  color: #fff;
+  font-size: 13px;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
+}
+.product-info {
+  padding: 15px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.product-name {
+  font-size: 20px;  /* bigger font but same card size */
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: #333;
+}
+.product-desc {
+  font-size: 15px;
+  color: #666;
+  margin-bottom: 10px;
+}
+.product-price {
+  font-size: 17px;
+  margin-bottom: 10px;
+}
+.current-price {
+  font-weight: bold;
+  color: #ff9800;
+  margin-right: 10px;
+}
+.old-price {
+  text-decoration: line-through;
+  color: #999;
+}
+.product-actions {
+  display: flex;
+  gap: 8px;
+}
+.product-actions .btn {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 15px;  /* bigger buttons but card same size */
+  border-radius: 6px;
+}
+.btn-outline {
+  border: 1px solid #ff9800;
+  background: transparent;
+  color: #ff9800;
+  transition: all 0.3s;
+}
+.btn-outline:hover {
+  background: #ff9800;
+  color: #fff;
+}
+</style>
+
+<!-- ===== Blog Section ===== -->
+<section class="blog-section outer-top-vs">
+  <div class="container">
+    <h3 class="section-title">Latest Blogs</h3>
+    <div class="blog-cards">
+      {% for blog in blogs %}
+      <div class="blog-card">
+        <div class="blog-image">
+          <a href="{{ blog.detail_url }}">
+            <img src="{{ url_for('static', filename='uploads/blog/' ~ blog.image) }}" alt="{{ blog.title }}">
+          </a>
+        </div>
+        <div class="blog-info">
+          <h4 class="blog-title">
+            <a href="{{ blog.detail_url }}">{{ blog.title }}</a>
+          </h4>
+          <p class="blog-desc">
+            {{ blog.description }}
+          </p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+/* ===== Section Title Styling ===== */
+.blog-section .section-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #ff9800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #ff9800;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+/* ===== Blog Cards Layout ===== */
+.blog-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  justify-content: center; /* center single or few items */
+}
+.blog-card {
+  background: linear-gradient(145deg, #fff, #f9f9f9);
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  transition: all 0.4s ease;
+  flex: 1 1 300px; /* minimum width 300px */
+  max-width: 320px; /* maximum width */
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 25px;
+}
+.blog-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+}
+.blog-image {
+  overflow: hidden;
+  border-bottom: 1px solid #eee;
+}
+.blog-image img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+  display: block;
+}
+.blog-card:hover .blog-image img {
+  transform: scale(1.08);
+}
+
+.blog-info {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+}
+.blog-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  color: #333;
+  transition: color 0.3s;
+}
+.blog-title a {
+  text-decoration: none;
+  color: #333;
+}
+.blog-title a:hover {
+  color: #ff9800;
+}
+.blog-desc {
+  font-size: 15px;
+  color: #666;
+  margin-bottom: 15px;
+  flex-grow: 1;
+  line-height: 1.5;
+}
+.btn-outline {
+  border: 1px solid #ff9800;
+  background: transparent;
+  color: #ff9800;
+  padding: 10px 12px;
+  font-size: 15px;
+  border-radius: 6px;
+  text-align: center;
+  transition: all 0.3s;
+  text-decoration: none;
+}
+.btn-outline:hover {
+  background: #ff9800;
+  color: #fff;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 992px) {
+  .blog-card {
+    flex: 1 1 45%; /* 2 per row */
+    max-width: 45%;
+  }
+}
+@media (max-width: 768px) {
+  .blog-card {
+    flex: 1 1 100%; /* 1 per row */
+    max-width: 100%;
+  }
+}
+</style>
+
+<!-- ===== Featured Products Section ===== -->
+<section class="featured-products-section outer-top-vs">
+  <div class="container">
+    <h3 class="section-title">Featured Products</h3>
+    <div class="product-slider">
+      <div class="owl-carousel home-owl-carousel custom-carousel owl-theme">
+        {% for product in featured_products %}
+        <div class="item item-carousel">
+          <div class="product-card">
+            <div class="product-image">
+              <a href="{{ url_for('product_detail', product_id=product['id']) }}">
+                {% if product.image1 %}
+                <img src="{{ url_for('static', filename='uploads/product/' ~ product.image1) }}" alt="{{ product.name }}">
+                {% endif %}
+                {% if product.image2 %}
+                <img src="{{ url_for('static', filename='uploads/product/' ~ product.image2) }}" alt="{{ product.name }}" class="hover-image">
+                {% endif %}
+              </a>
+              {% if product.is_new %}
+              <span class="badge-new">New</span>
+              {% endif %}
+            </div>
+            <div class="product-info">
+              <h4 class="product-name"><a href="{{url_for('product_detail',product_id=product['id'])}}">{{ product.name }}</a></h4>
+              {% if product.description %}
+              <p class="product-desc">{{ product.description[:60] }}{% if product.description|length > 60 %}...{% endif %}</p>
+              {% endif %}
+              
+              <div class="product-actions">
+  <a href="{{ url_for('product_detail', product_id=product['id']) }}" class="btn btn-outline">View Details</a>
+</div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+<style>
+  /* ===== Section Title Styling ===== */
+.featured-products-section .section-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #ff9800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 25px;
+  border-bottom: 2px solid #ff9800;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+/* ===== Product Card ===== */
+.featured-products-section .product-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.featured-products-section .product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* ===== Product Images ===== */
+.featured-products-section .product-image {
+  position: relative;
+  overflow: hidden;
+}
+.featured-products-section .product-image img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+.featured-products-section .product-image .hover-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+}
+.featured-products-section .product-card:hover .hover-image {
+  opacity: 1;
+}
+.featured-products-section .product-card:hover .product-image img:first-child {
+  opacity: 0;
+}
+
+/* ===== Badge ===== */
+.featured-products-section .badge-new {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #ff9800;
+  color: #fff;
+  font-size: 13px;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
+}
+
+/* ===== Product Info ===== */
+.featured-products-section .product-info {
+  padding: 15px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.featured-products-section .product-name {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: #333;
+}
+.featured-products-section .product-desc {
+  font-size: 15px;
+  color: #666;
+  margin-bottom: 10px;
+}
+.featured-products-section .product-price {
+  font-size: 17px;
+  margin-bottom: 10px;
+}
+.featured-products-section .current-price {
+  font-weight: bold;
+  color: #ff9800;
+  margin-right: 10px;
+}
+.featured-products-section .old-price {
+  text-decoration: line-through;
+  color: #999;
+}
+
+/* ===== Buttons ===== */
+.featured-products-section .product-actions {
+  display: flex;
+  gap: 8px;
+}
+.featured-products-section .product-actions .btn {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 15px;
+  border-radius: 6px;
+}
+.featured-products-section .btn-outline {
+  border: 1px solid #ff9800;
+  background: transparent;
+  color: #ff9800;
+  transition: all 0.3s;
+}
+.featured-products-section .btn-outline:hover {
+  background: #ff9800;
+  color: #fff;
+}
+
+</style>
+
+
+
+
+
+
+
+
+
+
+{% endblock %}

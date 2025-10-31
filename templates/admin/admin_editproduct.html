@@ -1,0 +1,89 @@
+{% extends 'admin/adminlayout.html' %}
+{% block content %}
+
+<div class="main-panel">        
+  <div class="content-wrapper">
+    <div class="page-header">
+      <h3 class="page-title">Edit Product</h3>
+    </div>
+
+    <div class="row">    
+      <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <form class="forms-sample" method="post" action="{{ url_for('edit_product', id=product['id']) }}" enctype="multipart/form-data">
+
+              <!-- Product Name -->
+              <div class="form-group">
+                <label>Product Name</label>
+                <input type="text" name="name" class="form-control" value="{{ product['name'] }}">
+              </div>     
+
+              <!-- Images -->
+              <div class="form-group">
+                <label>Main Image</label>
+                <input type="file" name="image1" class="form-control">
+                {% if product['image1'] %}
+                <img src="{{ url_for('static', filename='uploads/product/' ~ product['image1']) }}" alt="" style="width: 80px;">
+                {% endif %}
+              </div>
+
+              <div class="form-group">
+                <label>Image 2</label>
+                <input type="file" name="image2" class="form-control">
+                {% if product['image2'] %}
+                <img src="{{ url_for('static', filename='uploads/product/' ~ product['image2']) }}" alt="" style="width: 80px;">
+                {% endif %}
+              </div>
+
+              <div class="form-group">
+                <label>Image 3</label>
+                <input type="file" name="image3" class="form-control">
+                {% if product['image3'] %}
+                <img src="{{ url_for('static', filename='uploads/product/' ~ product['image3']) }}" alt="" style="width: 80px;">
+                {% endif %}
+              </div>
+
+              <!-- Description -->
+              <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" class="form-control" rows="4">{{ product['description'] }}</textarea>
+              </div>
+
+              <!-- Has Type -->
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" name="has_type" value="1" {% if product['has_type'] == 1 %} checked {% endif %}>
+                  Has Type
+                </label>
+              </div>
+
+              <!-- New Product -->
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" name="is_new" value="1" {% if product['is_new'] == 1 %} checked {% endif %}>
+                  Mark as New Product
+                </label>
+              </div>
+
+              <!-- Featured Product -->
+              <div class="form-group">
+                <label>
+                  <input type="checkbox" name="is_featured" value="1" {% if product['is_featured'] == 1 %} checked {% endif %}>
+                  Featured Product
+                </label>
+              </div>
+
+              <!-- Submit -->
+              <button type="submit" class="btn btn-primary mr-2">Update</button>
+              <a href="{{ url_for('admin_productlist') }}" class="btn btn-secondary">Cancel</a>
+
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

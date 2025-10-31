@@ -1,0 +1,70 @@
+{% extends 'admin/adminlayout.html' %}
+{% block content %}
+
+<div class="main-panel">        
+  <div class="content-wrapper">
+    <div class="page-header">
+      <h3 class="page-title">Add Product</h3>
+    </div>
+
+    <div class="row">    
+      <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <form class="forms-sample" method="post" action="{{ url_for('addproduct') }}" enctype="multipart/form-data">
+
+              <!-- Product Name -->
+              <div class="form-group">
+                <label>Product Name</label>
+                <input type="text" name="name" class="form-control" required>
+              </div>
+
+              <!-- Images -->
+              <div class="form-group">
+                <label>Main Image</label>
+                <input type="file" name="image1" class="form-control" required>
+              </div>
+
+              <div class="form-group">
+                <label>Image 2</label>
+                <input type="file" name="image2" class="form-control">
+              </div>
+
+              <div class="form-group">
+                <label>Image 3</label>
+                <input type="file" name="image3" class="form-control">
+              </div>
+
+              <!-- Description -->
+              <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" class="form-control" rows="4"></textarea>
+              </div>
+
+              <!-- Has Type -->
+              <div class="form-group">
+                <label><input type="checkbox" name="has_type"> Has Type</label>
+              </div>
+
+              <!-- New Product -->
+              <div class="form-group">
+                <label><input type="checkbox" name="is_new"> New Product</label>
+              </div>
+
+              <!-- Featured Product -->
+              <div class="form-group">
+                <label><input type="checkbox" name="is_featured"> Featured Product</label>
+              </div>
+
+              <!-- Submit -->
+              <button type="submit" class="btn btn-primary mr-2">Add Product</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

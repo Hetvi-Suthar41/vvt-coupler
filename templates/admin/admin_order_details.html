@@ -1,0 +1,54 @@
+{% extends 'admin/adminlayout.html' %}
+{% block content %}
+
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="page-header">
+      <h3 class="page-title">Order #{{ order.id }} Details</h3>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h5>Customer: {{ order.name }}</h5>
+        <p>Email: {{ order.email }} | Phone: {{ order.phone }}</p>
+        <p>Address: {{ order.address }}</p>
+        <p>Status: {{ order.status }} | Payment: {% if order.payment_id %}Paid{% else %}Pending{% endif %}</p>
+        <p>Total: ₹{{ order.total_amount }}</p>
+        <hr>
+
+        <h5>Items</h5>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Variant</th>
+              <th>Dimension</th>
+              <th>Material</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in items %}
+            <tr>
+              <td>{{ i.product_name }}</td>
+              <td>{{ i.type }} - {{ i.size }}</td>
+              <td>{{ i.dimension or '-' }}</td>
+              <td>{{ i.material }}</td>
+              <td>₹{{ i.price }}</td>
+              <td>{{ i.quantity }}</td>
+              <td>₹{{ i.price * i.quantity }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <a href="{{ url_for('admin_orders') }}" class="btn btn-secondary mt-3">Back to Orders</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

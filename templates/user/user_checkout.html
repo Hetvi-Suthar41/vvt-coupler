@@ -1,0 +1,185 @@
+{% extends 'user/userlayout.html' %}
+{% block content %}
+
+<style>
+/* ===== GENERAL ===== */
+body { font-family: 'Poppins', sans-serif; background-color:#f8f9fa; color:#333; }
+h2, h4 { color:#FF5722; font-weight:700; }
+h2 { font-size:2rem; margin-bottom:1rem; }
+h4 { font-size:1.4rem; }
+
+/* ===== CARD STYLING ===== */
+.card { border:none; border-radius:1rem; box-shadow:0 10px 25px rgba(0,0,0,0.08); transition:0.3s ease; }
+.card:hover { transform: translateY(-3px); }
+
+/* ===== TABLE STYLING ===== */
+.table-responsive { overflow-x:auto; }
+.table { width:100%; border-collapse: collapse; }
+.table thead { background: linear-gradient(90deg,#FF9800,#FF5722); color:white; font-weight:600; }
+.table th, .table td { padding: 0.8rem; text-align:center; font-size:14px; vertical-align:middle; }
+.table tbody tr:hover { background:#fff4e0; }
+
+/* ===== BUTTON ===== */
+.btn-gradient-primary { 
+    width:100%; font-weight:700; font-size:1rem; padding:0.6rem; 
+    border-radius:0.6rem; background: linear-gradient(90deg,#FF9800,#FF5722); color:#fff; 
+    transition:0.3s ease; box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+.btn-gradient-primary:hover { transform: scale(1.03); opacity:0.9; }
+
+/* ===== SHIPPING CARD ===== */
+.shipping-card { background:#fff; border-radius:1rem; padding:2rem 1.5rem; width:100%; box-shadow:0 15px 30px rgba(0,0,0,0.12); border-top:5px solid #FF5722; }
+.shipping-card h4 { text-align:center; margin-bottom:1.5rem; position:relative; }
+.shipping-card h4::after { content:""; width:50px; height:3px; background:#FF9800; display:block; margin:8px auto 0; border-radius:2px; }
+
+/* ===== FORM ===== */
+.form-label { font-weight:600; font-size:14px; color:#FF5722; }
+.form-control { border-radius:0.6rem; padding:0.6rem; font-size:14px; border:1px solid #ddd; box-shadow:0 3px 6px rgba(0,0,0,0.08); }
+.form-control:focus { border-color:#FF5722; box-shadow:0 0 8px rgba(255,87,34,0.2); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:768px){ .table th, .table td { font-size:12px; padding:0.4rem; } }
+</style>
+
+<div class="container mt-4 mb-5">
+<h2>Checkout</h2>
+
+{% if cart_items %}
+<div class="row">
+    <!-- CART TABLE -->
+    <div class="col-lg-8 mb-4">
+        <div class="card p-3">
+            <h4>Your Cart</h4>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Product</th>
+                            <th>Type</th>
+                            <th>Size</th>
+                            <th>Material</th>
+                            <th>Dimension</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ item.product_name }}</td>
+                            <td>{{ item.variant_type or '-' }}</td>
+                            <td>{{ item.variant_size or '-' }}</td>
+                            <td>{{ item.material or '-' }}</td>
+                            <td>{{ item.dimension_name or '-' }}</td>
+                            <td>₹{{ item.price }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>₹{{ item.price * item.quantity }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="9" class="text-end fw-bold">Total: ₹{{ total }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- SHIPPING DETAILS -->
+    <div class="col-lg-4">
+        <div class="card shipping-card">
+            <h4>Shipping Details</h4>
+            <form id="checkout-form">
+                <div class="mb-3">
+                    <label class="form-label">Name</label>
+                    <input type="text" name="name" class="form-control" value="{{ user_name }}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" value="{{ user_email }}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Phone</label>
+                    <input type="text" name="phone" class="form-control" value="{{ user_phone }}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Address</label>
+                    <textarea name="address" class="form-control" rows="4" required>{{ user_address }}</textarea>
+                </div>
+                <button type="button" id="rzp-button" class="btn btn-gradient-primary">Place Order & Pay Now</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="text-center py-5">
+    <h4>Your cart is empty!</h4>
+    <a href="/" class="btn btn-gradient-primary mt-3">Go Shopping</a>
+</div>
+{% endif %}
+</div>
+
+<!-- RAZORPAY SCRIPT -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+document.getElementById('rzp-button').onclick = function(e) {
+    e.preventDefault();
+
+    let form = document.getElementById('checkout-form');
+    let formData = new FormData(form);
+    let data = {};
+    formData.forEach((value,key)=> { data[key] = value; });
+
+    fetch("/place_order", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify(data)
+    })
+    .then(res=>res.json())
+    .then(order=>{
+        if(order.status==="created"){
+            var options = {
+                "key":"rzp_test_RLhlv7OvzhV9ma",
+                "amount": order.total_amount*100,
+                "currency":"INR",
+                "name":"Coupler Manufacture",
+                "description":"Order #"+order.order_id,
+                "order_id": order.razorpay_order_id,
+                "handler": function(response){
+                    fetch("/verify_payment", {
+                        method:"POST",
+                        headers:{"Content-Type":"application/json"},
+                        body: JSON.stringify(response)
+                    })
+                    .then(res=>res.json())
+                    .then(data=>{
+                        if(data.status==="success"){
+                            alert("Payment Successful!");
+                            window.location.href="/";
+                        } else {
+                            alert("Payment verification failed!");
+                        }
+                    });
+                },
+                "prefill": {
+                    "name": data.name,
+                    "email": data.email,
+                    "contact": data.phone
+                },
+                "theme":{"color":"#FF5722"}
+            };
+            var rzp1 = new Razorpay(options);
+            rzp1.open();
+        } else {
+            alert("Failed to create order. Try again.");
+        }
+    });
+}
+</script>
+
+{% endblock %}

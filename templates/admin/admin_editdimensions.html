@@ -1,0 +1,73 @@
+{% extends 'admin/adminlayout.html' %}
+{% block content %}
+
+<div class="main-panel">        
+  <div class="content-wrapper">
+    <div class="page-header">
+      <h3 class="page-title">
+        Edit Dimension
+      </h3>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Forms</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Form elements</li>
+        </ol>
+      </nav>
+    </div>
+
+    <div class="row">    
+      <div class="col-12 grid-margin stretch-card">
+        <div class="card" style="min-height: 800px;">
+          <div class="card-body">
+            <form class="forms-sample" method="post" action="{{ url_for('edit_dimension', id=dimension['id']) }}">
+              
+              <!-- Variant Dropdown -->
+              <div class="form-group">
+                <label for="variant_id">Select Variant</label>
+                <select name="variant_id" id="variant_id" class="form-control" required>
+                  <option value="">Select Variant</option>
+                  {% for v in variants %}
+                    <option value="{{ v['id'] }}" {% if v['id'] == dimension['variant_id'] %}selected{% endif %}>
+                      {{ v['product_name'] }} - {{ v['type'] or '' }} - {{ v['size'] }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <!-- Dimension -->
+              <div class="form-group">
+                <label for="dimension">Dimension</label>
+                <input type="text" name="dimension" class="form-control" value="{{ dimension['dimension'] }}" required>
+              </div>
+
+              <!-- Material -->
+              <div class="form-group">
+                <label for="material">Material</label>
+                <input type="text" name="material" class="form-control" value="{{ dimension['material'] or '' }}">
+              </div>
+
+              <!-- Price -->
+              <div class="form-group">
+                <label for="price">Price</label>
+                <input type="number" name="price" class="form-control" value="{{ dimension['price'] }}" required>
+              </div>
+
+              <!-- Weight -->
+              <div class="form-group">
+                <label for="weight">Weight</label>
+                <input type="text" name="weight" class="form-control" value="{{ dimension['weight'] }}">
+              </div>
+
+              <!-- Submit Button -->
+              <button type="submit" class="btn btn-primary mr-2">Update</button>
+              <a href="{{ url_for('admin_dimensionslist') }}" class="btn btn-light">Cancel</a>
+
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
